@@ -81,6 +81,18 @@ while (<IN>) {
 	}
 }
 
+# probably adpated from http://paulbourke.net/geometry/pointlineplane/DistancePoint.java ?
+sub distanceAlongSegment {
+        my ($p1x, $p1y, $p2x, $p2y, $p3x, $p3y) = @_;
+
+        my $xDelta = $p2x - $p1x;
+        my $yDelta = $p2y - $p1y;
+
+        my $u = (($p3x - $p1x) * $xDelta + ($p3y - $p1y) * $yDelta) / ($xDelta * $xDelta + $yDelta * $yDelta);
+
+        return $u;
+}
+
 while (<>) {
 	chomp;
 	($lat, $lon) = split(/[, ]/);
@@ -88,7 +100,7 @@ while (<>) {
 	$a = int($lat / $bucket);
 	$o = int($lon * $rat / $bucket);
 
-	print "$lat,$lon: $a,$o\n";
+	print "$lat,$lon: ";
 
 	@possible = ();
 	for ($aa = $a - 1; $aa <= $a + 1; $aa++) {
@@ -97,7 +109,36 @@ while (<>) {
 		}
 	}
 
+	$bestd = 99999;
+	$best = "";
+
 	for $p (@possible) {
-		print "   $p\n";
+		($way, $seg) = split(/ /, $p);
+		$along = distanceAlongSegment($lats{$way}[$seg], $lons{$way}[$seg],
+		                              $lats{$way}[$seg + 1], $lons{$way}[$seg + 1],
+					      $lat, $lon);
+		if ($along < 0) {
+			$along = 0;
+		}
+		if ($along > 1) {
+			$along = 1;
+		}
+
+		$lat1 = $lats{$way}[$seg + 1] * $along + $lats{$way}[$seg] * (1 - $along);
+		$lon1 = $lons{$way}[$seg + 1] * $along + $lons{$way}[$seg] * (1 - $along);
+
+		$latd = ($lat - $lat1);
+		$lond = ($lon - $lon1) * $rat;
+		$d = sqrt($latd * $latd + $lond * $lond);
+
+		if ($d < $bucket) {
+			if ($d < $bestd) {
+				$bestd = $d;
+				$best = "$way " . sprintf("%.4f", $seg + $along) . "   $lat1,$lon1";
+			}
+		}
 	}
+
+	printf("%.2f ", $bestd / $foot);
+	print " $best\n";
 }
