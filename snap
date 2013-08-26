@@ -1,0 +1,103 @@
+#!/usr/bin/perl
+
+$pi = 4 * atan2(1, 1);
+$foot = .00000274;
+$bucket = 100 * $foot;
+
+open(IN, "../city.snap");
+while (<IN>) {
+	chomp;
+	if (/\/\/ id=([0-9]*)/) {
+		$id = $1;
+	} else {
+		print STDERR "no id in $_\n";
+		next;
+	}
+
+	next unless /;highway=/;
+
+	if ($seq++ % 100 == 0) {
+		print STDERR "$id\r";
+	}
+
+	s/ *\/\/.*//;
+	@points = split(/ /);
+	@lat = ();
+	@lon = ();
+
+	for $p (@points) {
+		($lat, $lon) = split(/,/, $p);
+
+		if ($rat == 0) {
+			$rat = cos($lat * $pi / 180);
+			# print STDERR "rat is $rat\n";
+		}
+
+		push @lat, $lat;
+		push @lon, $lon;
+	}
+
+	@lat2 = ();
+	@lon2 = ();
+
+	for ($i = 0; $i < $#lat; $i++) {
+		push @lat2, $lat[$i];
+		push @lon2, $lon[$i];
+
+		$latd = ($lat[$i + 1] - $lat[$i]);
+		$lond = ($lon[$i + 1] - $lon[$i]) * $rat;
+		$d = sqrt($latd * $latd + $lond * $lond);
+
+		if ($d > $bucket) {
+			# print STDERR "too far $d between $lat[$i],$lon[$i] and $lat[$i + 1],$lon[$i + 1]\n";
+
+			$n = int($d / $bucket) + 1;
+			for ($j = 1; $j < $n; $j++) {
+				$lat = $lat[$i] * $j / $n + $lat[$i + 1] * (1 - ($j / $n));
+				$lon = $lon[$i] * $j / $n + $lon[$i + 1] * (1 - ($j / $n));
+
+				# print STDERR "interpolate $lat,$lon  $j of $n\n";
+
+				push @lat2, $lat;
+				push @lon2, $lon;
+			}
+		}
+	}
+
+	push @lat2, $lat[$#lat];
+	push @lon2, $lon[$#lon];
+
+	@{$lats{$id}} = @lat2;
+	@{$lons{$id}} = @lon2;
+
+	for ($i = 0; $i < $#lat2; $i++) {
+		$lat = ($lat2[$i] + $lat2[$i + 1]) / 2;
+		$lon = ($lon2[$i] + $lon2[$i + 1]) / 2;
+
+		$a = int($lat / $bucket);
+		$o = int($lon * $rat / $bucket);
+
+		push @{$ways{$a}{$o}}, "$id $i";
+	}
+}
+
+while (<>) {
+	chomp;
+	($lat, $lon) = split(/[, ]/);
+
+	$a = int($lat / $bucket);
+	$o = int($lon * $rat / $bucket);
+
+	print "$lat,$lon: $a,$o\n";
+
+	@possible = ();
+	for ($aa = $a - 1; $aa <= $a + 1; $aa++) {
+		for ($oo = $o - 1; $oo <= $o + 1; $oo++) {
+			push @possible, @{$ways{$aa}{$oo}};
+		}
+	}
+
+	for $p (@possible) {
+		print "   $p\n";
+	}
+}
