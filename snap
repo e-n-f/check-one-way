@@ -2,7 +2,7 @@
 
 $pi = 4 * atan2(1, 1);
 $foot = .00000274;
-$bucket = 100 * $foot;
+$bucket = 50 * $foot;
 
 open(IN, "../city.snap");
 while (<IN>) {
@@ -59,8 +59,8 @@ while (<IN>) {
 
 			$n = int($d / $bucket) + 1;
 			for ($j = 1; $j < $n; $j++) {
-				$lat = $lat[$i] * $j / $n + $lat[$i + 1] * (1 - ($j / $n));
-				$lon = $lon[$i] * $j / $n + $lon[$i + 1] * (1 - ($j / $n));
+				$lat = $lat[$i] * (1 - ($j / $n)) + $lat[$i + 1] * (($j / $n));
+				$lon = $lon[$i] * (1 - ($j / $n)) + $lon[$i + 1] * (($j / $n));
 
 				# print STDERR "interpolate $lat,$lon  $j of $n\n";
 
