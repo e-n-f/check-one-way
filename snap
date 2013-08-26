@@ -16,6 +16,12 @@ while (<IN>) {
 
 	next unless /;highway=/;
 
+	if (/;oneway=([^ ;]*)/) {
+		$oneway{$id} = $1;
+	} else {
+		$oneway{$id} = "unknown";
+	}
+
 	if ($seq++ % 100 == 0) {
 		print STDERR "$id\r";
 	}
@@ -88,6 +94,10 @@ sub distanceAlongSegment {
         my $xDelta = $p2x - $p1x;
         my $yDelta = $p2y - $p1y;
 
+	if ($xDelta * $xDelta + $yDelta * $yDelta == 0) {
+		return -1;
+	}
+
         my $u = (($p3x - $p1x) * $xDelta + ($p3y - $p1y) * $yDelta) / ($xDelta * $xDelta + $yDelta * $yDelta);
 
         return $u;
@@ -110,7 +120,7 @@ while (<>) {
 	}
 
 	$bestd = 99999;
-	$best = "xxx xxx xxx,xxx";
+	$best = "xxx xxx unknown xxx,xxx";
 
 	for $p (@possible) {
 		($way, $seg) = split(/ /, $p);
@@ -134,7 +144,7 @@ while (<>) {
 		if ($d < $bucket) {
 			if ($d < $bestd) {
 				$bestd = $d;
-				$best = "$way " . sprintf("%.4f", $seg + $along) . " $lat1,$lon1";
+				$best = "$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} $lat1,$lon1";
 			}
 		}
 	}
