@@ -1,0 +1,29 @@
+#!/usr/bin/perl
+
+# 39.7022828926,-104.98279701: 0.10 124298330 22.7575 unknown 39.7022828947636,-104.982797383219
+
+while (<>) {
+	($where, $dist, $way, $along, $oneway) = split(/ /);
+
+	$oneway{$way} = $oneway;
+
+	if ($way eq $oway) {
+		if ($along > $oalong) {
+			$tally{$way}++;
+		} elsif ($along < $oalong) {
+			$tally{$way}--;
+		}
+
+		$count{$way}++;
+	}
+
+	$oway = $way;
+	$oalong = $along;
+}
+
+for $way (keys(%count)) {
+	printf("%.4f ", $tally{$way} / $count{$way} * 100);
+	print "$oneway{$way} $way ";
+
+	print "$tally{$way} $count{$way}\n";
+}
