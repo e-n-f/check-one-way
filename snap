@@ -110,7 +110,7 @@ while (<>) {
 	}
 
 	$bestd = 99999;
-	$best = "";
+	$best = "xxx xxx xxx,xxx";
 
 	for $p (@possible) {
 		($way, $seg) = split(/ /, $p);
@@ -134,11 +134,11 @@ while (<>) {
 		if ($d < $bucket) {
 			if ($d < $bestd) {
 				$bestd = $d;
-				$best = "$way " . sprintf("%.4f", $seg + $along) . "   $lat1,$lon1";
+				$best = "$way " . sprintf("%.4f", $seg + $along) . " $lat1,$lon1";
 			}
 		}
 	}
 
 	printf("%.2f ", $bestd / $foot);
-	print " $best\n";
+	print "$best\n";
 }
