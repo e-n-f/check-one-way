@@ -2,26 +2,47 @@
 
 # 39.7022828926,-104.98279701: 0.10 124298330 22.7575 unknown 39.7022828947636,-104.982797383219
 
+$pi = 4 * atan2(1, 1);
+$foot = .00000274;
+
 while (<>) {
 	($where, $dist, $way, $along, $oneway) = split(/ /);
+	($lat, $lon) = split(/,/, $where);
 
 	$oneway{$way} = $oneway;
 
 	if ($way eq $oway) {
-		if ($along > $oalong) {
-			$tally{$way}++;
-		} elsif ($along < $oalong) {
-			$tally{$way}--;
-		}
+		$latd = $lat - $olat;
+		$lond = ($lon - $olon) * cos($lat * $pi / 180);
+		$d = sqrt($latd * $latd + $lond * $lond);
 
-		$count{$way}++;
+		if ($d > 50 * $foot) {
+			if ($along > $oalong) {
+				$tally{$way}++;
+				$count{$way}++;
+			} elsif ($along < $oalong) {
+				$tally{$way}--;
+				$count{$way}++;
+			}
+		}
 	}
 
 	$oway = $way;
 	$oalong = $along;
+	$olat = $lat;
+	$olon = $lon;
 }
 
 for $way (keys(%count)) {
+
+	if ($oneway{$way} eq "yes" && $tally{$way} / $count{$way} * 100 < 50) {
+		print "wrong ";
+	} elsif ($oneway{$way} ne "yes" && $tally{$way} / $count{$way} * 100 > 50) {
+		print "wrong ";
+	} else {
+		print "x     ";
+	}
+
 	printf("%.4f ", $tally{$way} / $count{$way} * 100);
 	print "$oneway{$way} $way ";
 
