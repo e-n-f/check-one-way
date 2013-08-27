@@ -121,6 +121,11 @@ while (<>) {
 
 	$bestd = 99999;
 	$best = "xxx xxx unknown xxx,xxx";
+	$bestway = 0;
+
+	$samed = 99999;
+	$same = "xxx xxx unknown xxx,xxx";
+	$sameway = 0;
 
 	for $p (@possible) {
 		($way, $seg) = split(/ /, $p);
@@ -144,11 +149,26 @@ while (<>) {
 		if ($d < $bucket) {
 			if ($d < $bestd) {
 				$bestd = $d;
+				$bestway = $way;
 				$best = "$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} $lat1,$lon1";
+			}
+
+			if ($d < $samed && $way == $prevway) {
+				$samed = $d;
+				$sameway = $way;
+				$same = "$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} $lat1,$lon1";
 			}
 		}
 	}
 
+	if ($sameway != 0) {
+		$bestd = $samed;
+		$best = $same;
+		$bestway = $sameway;
+	}
+
 	printf("%.2f ", $bestd / $foot);
 	print "$best\n";
+
+	$prevway = $bestway;
 }
