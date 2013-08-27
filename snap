@@ -15,6 +15,11 @@ while (<IN>) {
 	}
 
 	next unless /;highway=/;
+	next if /;highway=footway/;
+	next if /;highway=steps/;
+	next if /;highway=cycleway/;
+	next if /;highway=bridleway/;
+	next if /;highway=pedestrian/;
 
 	if (/;oneway=([^ ;]*)/) {
 		$oneway{$id} = $1;
