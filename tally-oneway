@@ -20,11 +20,11 @@ while (<>) {
 
 		if ($d > 75 * $foot) {
 			if ($along > $oalong) {
-				$tally{$way}++;
-				$count{$way}++;
+				$tally{$way} += $d;
+				$count{$way} += $d;
 			} elsif ($along < $oalong) {
-				$tally{$way}--;
-				$count{$way}++;
+				$tally{$way} -= $d;
+				$count{$way} += $d;
 			}
 
 			$traversed{$way} += $d / $foot;
@@ -40,13 +40,15 @@ while (<>) {
 	$olon = $lon;
 }
 
-for $way (keys(%count)) {
+for $way (sort { $traversed{$b} / $len{$b} <=> $traversed{$a} / $len{$a} } keys(%count)) {
 
-	if ($oneway{$way} eq "yes" && $tally{$way} / $count{$way} * 100 < 85) {
+	next if $traversed{$way} / $len{$way} < 10;
+
+	if ($oneway{$way} eq "yes" && $tally{$way} / $count{$way} * 100 < 88) {
 		print "wrong ";
-	} elsif ($oneway{$way} ne "yes" && $tally{$way} / $count{$way} * 100 > 85) {
+	} elsif ($oneway{$way} ne "yes" && $tally{$way} / $count{$way} * 100 > 88) {
 		print "wrong ";
-	} elsif ($oneway{$way} ne "-1" && $tally{$way} / $count{$way} * 100 < -85) {
+	} elsif ($oneway{$way} ne "-1" && $tally{$way} / $count{$way} * 100 < -88) {
 		print "wrong ";
 	} else {
 		print "ok    ";
