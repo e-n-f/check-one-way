@@ -197,7 +197,7 @@ while (<>) {
 		}
 	}
 
-	print "$lat,$lon: ";
+	print "$lat,$lon $lat2,$lon2 ";
 	printf("%.2f ", $cmp_dist{$possible[0]} / $foot);
 	($way, $seg) = split(/ /, $possible[0]);
 	$along = $along{$possible[0]};

@@ -7,7 +7,7 @@ $foot = .00000274;
 
 while (<>) {
 	chomp;
-	($where, $dist, $way, $along, $oneway, $len) = split(/ /);
+	($where, $where2, $dist, $way, $along, $oneway, $len) = split(/ /);
 	($lat, $lon) = split(/,/, $where);
 
 	$oneway{$way} = $oneway;
