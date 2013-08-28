@@ -7,17 +7,18 @@ $foot = .00000274;
 
 while (<>) {
 	chomp;
-	($where, $dist, $way, $along, $oneway) = split(/ /);
+	($where, $dist, $way, $along, $oneway, $len) = split(/ /);
 	($lat, $lon) = split(/,/, $where);
 
 	$oneway{$way} = $oneway;
+	$len{$way} = $len;
 
 	if ($way eq $oway) {
 		$latd = $lat - $olat;
 		$lond = ($lon - $olon) * cos($lat * $pi / 180);
 		$d = sqrt($latd * $latd + $lond * $lond);
 
-		if ($d > 50 * $foot) {
+		if ($d > 75 * $foot) {
 			if ($along > $oalong) {
 				$tally{$way}++;
 				$count{$way}++;
@@ -25,6 +26,8 @@ while (<>) {
 				$tally{$way}--;
 				$count{$way}++;
 			}
+
+			$traversed{$way} += $d / $foot;
 		} else {
 			# retain old lat/lon/along for next check
 			next;
@@ -51,6 +54,8 @@ for $way (keys(%count)) {
 
 	printf("%.4f ", $tally{$way} / $count{$way} * 100);
 	print "$oneway{$way} $way ";
+
+	printf("%.3f ", $traversed{$way} / $len{$way});
 
 	print "$tally{$way} $count{$way}\n";
 }

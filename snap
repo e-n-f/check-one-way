@@ -61,6 +61,8 @@ while (<IN>) {
 		$lond = ($lon[$i + 1] - $lon[$i]) * $rat;
 		$d = sqrt($latd * $latd + $lond * $lond);
 
+		$len{$id} += $d / $foot;
+
 		if ($d > $bucket) {
 			# print STDERR "too far $d between $lat[$i],$lon[$i] and $lat[$i + 1],$lon[$i + 1]\n";
 
@@ -200,7 +202,8 @@ while (<>) {
 	($way, $seg) = split(/ /, $possible[0]);
 	$along = $along{$possible[0]};
 
-	print "http://www.openstreetmap.org/browse/way/$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way}\n";
+	print "http://www.openstreetmap.org/browse/way/$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} ";
+	printf("%d\n", $len{$way});
 
 	$prevway = $way;
 }
