@@ -20,11 +20,11 @@ while (<>) {
 
 		if ($d > 75 * $foot) {
 			if ($along > $oalong) {
-				$tally{$way} += $d;
-				$count{$way} += $d;
+				$tally{$way} += $d / $foot;
+				$count{$way} += $d / $foot;
 			} elsif ($along < $oalong) {
-				$tally{$way} -= $d;
-				$count{$way} += $d;
+				$tally{$way} -= $d / $foot;
+				$count{$way} += $d / $foot;
 			}
 
 			$traversed{$way} += $d / $foot;
@@ -58,6 +58,5 @@ for $way (sort { $traversed{$b} / $len{$b} <=> $traversed{$a} / $len{$a} } keys(
 	print "$oneway{$way} $way ";
 
 	printf("%.3f ", $traversed{$way} / $len{$way});
-
-	print "$tally{$way} $count{$way}\n";
+	printf("%d %d\n", $tally{$way}, $count{$way});
 }
