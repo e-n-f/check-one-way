@@ -4,7 +4,9 @@ $pi = 4 * atan2(1, 1);
 $foot = .00000274;
 $bucket = 50 * $foot;
 
-open(IN, "../city.snap");
+$streets = shift(@ARGV);
+
+open(IN, $streets);
 while (<IN>) {
 	chomp;
 	if (/\/\/ id=([0-9]*)/) {
@@ -155,13 +157,13 @@ while (<>) {
 			if ($d < $bestd) {
 				$bestd = $d;
 				$bestway = $way;
-				$best = "$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} $lat1,$lon1";
+				$best = "http://www.openstreetmap.org/browse/way/$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} $lat1,$lon1";
 			}
 
 			if ($d < $samed && $way == $prevway) {
 				$samed = $d;
 				$sameway = $way;
-				$same = "$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} $lat1,$lon1";
+				$same = "http://www.openstreetmap.org/browse/way/$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} $lat1,$lon1";
 			}
 		}
 	}
