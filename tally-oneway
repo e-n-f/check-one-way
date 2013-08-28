@@ -42,14 +42,14 @@ while (<>) {
 
 for $way (keys(%count)) {
 
-	if ($oneway{$way} eq "yes" && $tally{$way} / $count{$way} * 100 < 75) {
+	if ($oneway{$way} eq "yes" && $tally{$way} / $count{$way} * 100 < 85) {
 		print "wrong ";
-	} elsif ($oneway{$way} ne "yes" && $tally{$way} / $count{$way} * 100 > 75) {
+	} elsif ($oneway{$way} ne "yes" && $tally{$way} / $count{$way} * 100 > 85) {
 		print "wrong ";
-	} elsif ($oneway{$way} ne "-1" && $tally{$way} / $count{$way} * 100 < -75) {
+	} elsif ($oneway{$way} ne "-1" && $tally{$way} / $count{$way} * 100 < -85) {
 		print "wrong ";
 	} else {
-		print "x     ";
+		print "ok    ";
 	}
 
 	printf("%.4f ", $tally{$way} / $count{$way} * 100);
