@@ -202,8 +202,12 @@ while (<>) {
 	($way, $seg) = split(/ /, $possible[0]);
 	$along = $along{$possible[0]};
 
-	print "http://www.openstreetmap.org/browse/way/$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} ";
-	printf("%d\n", $len{$way});
+	if ($#possible < 0) {
+		print "xxx xxx xxx xxx\n";
+	} else {
+		print "http://www.openstreetmap.org/browse/way/$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} ";
+		printf("%d\n", $len{$way});
+	}
 
 	$prevway = $way;
 }
