@@ -189,6 +189,14 @@ while (<>) {
 		}
 	}
 
+	@p = @possible;
+	@possible = ();
+	for $p (@p) {
+		if ($cmp_dist{$p} < $bucket) {
+			push @possible, $p;
+		}
+	}
+
 	@possible = sort compare @possible;
 
 	if (0) {
