@@ -110,14 +110,27 @@ sub distanceAlongSegment {
         return $u;
 }
 
+sub compare($$) {
+	if ($cmp_polarity{$_[0]} != $cmp_polarity{$_[1]}) {
+		return $cmp_polarity{$_[0]} - $cmp_polarity{$_[1]};
+	}
+	if ($cmp_same{$_[0]} != $cmp_same{$_[1]}) {
+		return $cmp_same{$_[0]} - $cmp_same{$_[1]};
+	}
+
+	return $cmp_dist{$_[0]} - $cmp_dist{$_[1]};
+}
+
 while (<>) {
 	chomp;
-	($lat, $lon) = split(/[, ]/);
+	($when, $a, $to, $b) = split(/ /);
+	($lat, $lon) = split(/[, ]/, $a);
+	($lat2, $lon2) = split(/[, ]/, $b);
+
+	$angle = atan2($lat2 - $lat, ($lon2 - $lon) * $rat) * 180 / $pi;
 
 	$a = int($lat / $bucket);
 	$o = int($lon * $rat / $bucket);
-
-	print "$lat,$lon: ";
 
 	@possible = ();
 	for ($aa = $a - 1; $aa <= $a + 1; $aa++) {
@@ -126,19 +139,16 @@ while (<>) {
 		}
 	}
 
-	$bestd = 99999;
-	$best = "xxx xxx unknown xxx,xxx";
-	$bestway = 0;
-
-	$samed = 99999;
-	$same = "xxx xxx unknown xxx,xxx";
-	$sameway = 0;
+	%cmp_polarity = ();
+	%cmp_same = ();
+	%cmp_dist = ();
+	%along = ();
 
 	for $p (@possible) {
 		($way, $seg) = split(/ /, $p);
-		$along = distanceAlongSegment($lats{$way}[$seg], $lons{$way}[$seg],
-		                              $lats{$way}[$seg + 1], $lons{$way}[$seg + 1],
-					      $lat, $lon);
+		$along = distanceAlongSegment($lats{$way}[$seg], $lons{$way}[$seg] * $rat,
+		                              $lats{$way}[$seg + 1], $lons{$way}[$seg + 1] * $rat,
+					      $lat, $lon * $rat);
 		if ($along < 0) {
 			$along = 0;
 		}
@@ -146,36 +156,51 @@ while (<>) {
 			$along = 1;
 		}
 
+		$along{$p} = $along;
+
 		$lat1 = $lats{$way}[$seg + 1] * $along + $lats{$way}[$seg] * (1 - $along);
 		$lon1 = $lons{$way}[$seg + 1] * $along + $lons{$way}[$seg] * (1 - $along);
+
+		$ang = atan2($lats{$way}[$seg + 1] - $lats{$way}[$seg],
+			     ($lons{$way}[$seg + 1] - $lons{$way}[$seg]) * $rat) * 180 / $pi;
+		$angd = ($angle - $ang + 720 + 180) % 360 - 180;
+
+		$cmp_polarity{$p} = 2;
+		if ($oneway{$way} eq "yes" && $angd > -45 && $angd < 45) {
+			$cmp_polarity{$p} = 0;
+		} elsif ($oneway{$way} eq "-1" && ($angd < -135 || $angd > 135)) {
+			$cmp_polarity{$p} = 0;
+		} elsif (($angd < -135 || $angd > 135) || ($angd > -45 && $angd < 45)) {
+			$cmp_polarity{$p} = 1;
+		}
 
 		$latd = ($lat - $lat1);
 		$lond = ($lon - $lon1) * $rat;
 		$d = sqrt($latd * $latd + $lond * $lond);
 
-		if ($d < $bucket) {
-			if ($d < $bestd) {
-				$bestd = $d;
-				$bestway = $way;
-				$best = "http://www.openstreetmap.org/browse/way/$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} $lat1,$lon1";
-			}
+		$cmp_dist{$p} = $d;
 
-			if ($d < $samed && $way == $prevway) {
-				$samed = $d;
-				$sameway = $way;
-				$same = "http://www.openstreetmap.org/browse/way/$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} $lat1,$lon1";
-			}
+		if ($way eq $prevway) {
+			$cmp_same{$p} = 1;
+		} else {
+			$cmp_same{$p} = 0;
 		}
 	}
 
-	if ($sameway != 0) {
-		$bestd = $samed;
-		$best = $same;
-		$bestway = $sameway;
+	@possible = sort compare @possible;
+
+	if (0) {
+		for $p (@possible) {
+			print "preference: $p -- $cmp_polarity{$p} $cmp_same{$p} $cmp_dist{$p}\n";
+		}
 	}
 
-	printf("%.2f ", $bestd / $foot);
-	print "$best\n";
+	print "$lat,$lon: ";
+	printf("%.2f ", $cmp_dist{$possible[0]} / $foot);
+	($way, $seg) = split(/ /, $possible[0]);
+	$along = $along{$possible[0]};
 
-	$prevway = $bestway;
+	print "http://www.openstreetmap.org/browse/way/$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way}\n";
+
+	$prevway = $way;
 }

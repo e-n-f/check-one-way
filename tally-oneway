@@ -6,6 +6,7 @@ $pi = 4 * atan2(1, 1);
 $foot = .00000274;
 
 while (<>) {
+	chomp;
 	($where, $dist, $way, $along, $oneway) = split(/ /);
 	($lat, $lon) = split(/,/, $where);
 
@@ -24,6 +25,9 @@ while (<>) {
 				$tally{$way}--;
 				$count{$way}++;
 			}
+		} else {
+			# retain old lat/lon/along for next check
+			next;
 		}
 	}
 
