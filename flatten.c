@@ -160,7 +160,7 @@ static void XMLCALL start(void *data, const char *element, const char **attribut
 		} else if (find->id == n.id) {
 			thenodes[thenodecount++] = find;
 		} else {
-			fprintf(stderr, "FAIL looked for %u found %u\n", n.id, find->id);
+			fprintf(stderr, "warning: couldn't find node %u for way %u\n", n.id, theway);
 		}
 	} else if (strcmp(element, "tag") == 0) {
 		if (theway != 0) {
