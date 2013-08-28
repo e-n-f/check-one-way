@@ -36,7 +36,10 @@ Then you can match the GPS points against the OSM ways:
 And then tally up how likely it is that each street is one way, based on what
 happens in the GPS logs:
 
-   $ cat gps.matched | ./tally-oneway > gps.tally
+    $ cat gps.matched | ./tally-oneway > gps.tally
+
+What the results look like
+--------------------------
 
 The lines in <code>gps.tally</code> will look like this:
 
