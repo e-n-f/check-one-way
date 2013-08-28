@@ -35,11 +35,11 @@ while (<>) {
 
 for $way (keys(%count)) {
 
-	if ($oneway{$way} eq "yes" && $tally{$way} / $count{$way} * 100 < 50) {
+	if ($oneway{$way} eq "yes" && $tally{$way} / $count{$way} * 100 < 75) {
 		print "wrong ";
-	} elsif ($oneway{$way} ne "yes" && $tally{$way} / $count{$way} * 100 > 50) {
+	} elsif ($oneway{$way} ne "yes" && $tally{$way} / $count{$way} * 100 > 75) {
 		print "wrong ";
-	} elsif ($oneway{$way} ne "-1" && $tally{$way} / $count{$way} * 100 < -50) {
+	} elsif ($oneway{$way} ne "-1" && $tally{$way} / $count{$way} * 100 < -75) {
 		print "wrong ";
 	} else {
 		print "x     ";
