@@ -58,8 +58,12 @@ the fields mean:
   - <code>wrong</code>: The travel on this street doesn't match the OSM tags
   - <code>-93.6669</code>: Travel is 94% biased away from the order of nodes in the OSM way.
     0% would mean that there were equal amounts of travel in both directions.
-  - <code>unknown</code>: This way isn't currently tagged with any one-way information in OSM
+  - <code>unknown</code>: This way isn't currently tagged with any one-way information in OSM.
+    Alternatives are <code>yes</code>, <code>no</code>, and for ways that are one-way against
+    their node direction, </code>-1</code>.
+    See [the OSM wiki page about one-way tagging](http://wiki.openstreetmap.org/wiki/Key:oneway).
   - <code>http://www.openstreetmap.org/browse/way/6405519</code>: This is the ID of this way in OSM
+    so you can find it and fix it.
   - <code>37.833</code>: The GPS logs record 37.8 trips along the length of this way
   - <code>-79723</code>: The balance of travel direction is 79723 feet against the current direction of the way
   - <code>85113</code>: There are 85113 feet of total travel recorded on this way
