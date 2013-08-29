@@ -67,3 +67,21 @@ the fields mean:
   - <code>37.833</code>: The GPS logs record 37.8 trips along the length of this way.
   - <code>-79723</code>: The balance of travel direction is 79723 feet against the current direction of the way.
   - <code>85113</code>: There are 85113 feet of total travel recorded on this way.
+
+Searching for missing streets
+-----------------------------
+
+What's left after you remove all the known streets is a good clue to what's missing from the map.
+You can use [datamaps](https://github.com/ericfischer/datamaps) to draw a mask layer that leaves
+only these areas visible on the aerial photo so that it is easier to see whether they are
+missing streets or just GPS noise.
+
+To extract the missing streets into a datamaps file, you can do
+
+    $ cat gps.matched | ./draw-unmatched | ../datamaps/encode -m8 -z20 -o unmatched.shape
+
+and then in the script that serves the tiles, invoke datamaps rendering with
+
+    render -g -m -t 0 -c 000000 -l2 -B 12:.12:2 unmatched.shape $z $x $y
+
+to leave transparent an area around 100 feet wide around each GPS trace, with the rest masked to black.

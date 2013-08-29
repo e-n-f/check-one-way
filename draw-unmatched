@@ -1,0 +1,16 @@
+#!/usr/bin/perl
+
+$pi = 4 * atan2(1, 1);
+
+while (<>) {
+	($a, $b, $dist, $way) = split(/ /);
+
+	($lat1, $lon1) = split(/,/, $a);
+	($lat2, $lon2) = split(/,/, $b);
+
+	next if $way ne "xxx" || $lat1 == 0;
+
+	$angle = atan2($lat2 - $lat1, ($lon2 - $lon1) * cos($lat1 * $pi / 180));
+
+	printf("%s %s 8:%d\n", $a, $b, ($angle + $pi) * 255 / (2 * $pi) + 1);
+}
