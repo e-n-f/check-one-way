@@ -194,8 +194,9 @@ static void XMLCALL end(void *data, const char *el) {
 			if (x + 1 < thenodecount) {
 				int i;
 				for (i = x; i < x + max && i < thenodecount; i++) {
-					printf("%lf,%lf ", thenodes[i]->lat / 1000000.0,
-							   thenodes[i]->lon / 1000000.0);
+					printf("%lf,%lf,%u ", thenodes[i]->lat / 1000000.0,
+							      thenodes[i]->lon / 1000000.0,
+							      thenodes[i]->id);
 				}
 
 				printf("// id=%u", theway);

@@ -2,7 +2,7 @@
 
 $pi = 4 * atan2(1, 1);
 $foot = .00000274;
-$bucket = 50 * $foot;
+$bucket = 100 * $foot;
 
 $streets = shift(@ARGV);
 
@@ -37,9 +37,10 @@ while (<IN>) {
 	@points = split(/ /);
 	@lat = ();
 	@lon = ();
+	@node = ();
 
 	for $p (@points) {
-		($lat, $lon) = split(/,/, $p);
+		($lat, $lon, $node) = split(/,/, $p);
 
 		if ($rat == 0) {
 			$rat = cos($lat * $pi / 180);
@@ -48,14 +49,17 @@ while (<IN>) {
 
 		push @lat, $lat;
 		push @lon, $lon;
+		push @node, $node;
 	}
 
 	@lat2 = ();
 	@lon2 = ();
+	@node2 = ();
 
 	for ($i = 0; $i < $#lat; $i++) {
 		push @lat2, $lat[$i];
 		push @lon2, $lon[$i];
+		push @node2, $node[$i];
 
 		$latd = ($lat[$i + 1] - $lat[$i]);
 		$lond = ($lon[$i + 1] - $lon[$i]) * $rat;
@@ -75,15 +79,18 @@ while (<IN>) {
 
 				push @lat2, $lat;
 				push @lon2, $lon;
+				push @node2, "$node[$i],$node[$i + 1]";
 			}
 		}
 	}
 
 	push @lat2, $lat[$#lat];
 	push @lon2, $lon[$#lon];
+	push @node2, $node[$#lon];
 
 	@{$lats{$id}} = @lat2;
 	@{$lons{$id}} = @lon2;
+	@{$nodes{$id}} = @node2;
 
 	for ($i = 0; $i < $#lat2; $i++) {
 		$lat = ($lat2[$i] + $lat2[$i + 1]) / 2;
@@ -192,7 +199,7 @@ while (<>) {
 	@p = @possible;
 	@possible = ();
 	for $p (@p) {
-		if ($cmp_dist{$p} < $bucket) {
+		if ($cmp_dist{$p} < $bucket && $cmp_polarity{$p} != 2) {
 			push @possible, $p;
 		}
 	}
@@ -211,10 +218,12 @@ while (<>) {
 	$along = $along{$possible[0]};
 
 	if ($#possible < 0) {
-		print "xxx xxx xxx xxx\n";
+		print "xxx xxx xxx xxx xxx\n";
 	} else {
 		print "http://www.openstreetmap.org/browse/way/$way " . sprintf("%.4f", $seg + $along) . " $oneway{$way} ";
-		printf("%d\n", $len{$way});
+		printf("%d", $len{$way});
+		print " $nodes{$way}[$seg]";
+		print "\n";
 	}
 
 	$prevway = $way;
