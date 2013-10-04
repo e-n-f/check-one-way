@@ -103,10 +103,21 @@ sub handle_end {
 				printf("%.2f %.2f ", $oldele, $ele);
 
 				if ($dist != 0) {
-					printf("%.4f%% G\n", 100 * ($ele - $oldele) * 3.2808399 / $dist);
+					printf("%.4f%% ", 100 * ($ele - $oldele) * 3.2808399 / $dist);
 				} else {
-					printf("?%% G\n");
+					printf("?%% ");
 				}
+
+				if ($dist != 0) {
+					$rat = cos(($lat + $oldlat) / 2 * $pi / 180);
+					$heading = atan2($lat - $oldlat, ($lon - $oldlon) * $rat);
+
+					printf("%.3f ", $heading * 180 / $pi);
+				} else {
+					printf("? ");
+				}
+
+				print "G\n";
 			} else {
 				print "$oldwhen --\n";
 			}
