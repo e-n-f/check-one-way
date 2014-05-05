@@ -41,6 +41,21 @@ happens in the GPS logs:
 What the results look like
 --------------------------
 
+The lines in <code>gps.matched</code> will look like this:
+
+    37.826116,-122.252802 37.826118,-122.252803 18.69 http://www.openstreetmap.org/browse/way/196739954 1.0000 unknown 702
+    37.826118,-122.252803 37.826119,-122.252804 19.04 http://www.openstreetmap.org/browse/way/196739954 1.0000 unknown 702
+    37.826119,-122.252804 37.826119,-122.252804 19.13 http://www.openstreetmap.org/browse/way/196739954 1.0000 unknown 702
+
+The format of each line is:
+
+  * lat,lon of a point in the source data
+  * lat,lon of the following point in the source data
+  * distance (in feet) into the segment the point was matched to
+  * URL for the way the point was matched to
+  * segment (including fraction) of the way the point was matched to
+  * one-way tag on the way
+
 The lines in <code>gps.tally</code> will look like this:
 
     ok    100.0000 yes http://www.openstreetmap.org/browse/way/55212616 38.336 56775 56775
